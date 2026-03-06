@@ -1,41 +1,32 @@
 package finance
 
 import (
+	entities "simple_finance/internal/finance/entities"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-type Debit struct {
-	ID string
-	CategoryID string
-	UserID string
-	Title string
-	Desctiption string
-	Value float64
-	Date time.Time
-}
-
-func NewDebit(category Category, user User, title, description string, date time.Time, value float64) (*Debit, error) {
+func CreateNewDebit(category entities.Category, user entities.User, title, description string, date time.Time, value float64) (*entities.Debit, error){
 	if title == "" {
-		return nil, &InputCannotBeNil{
+		return nil, &entities.InputCannotBeNil{
 			Input: "title",
 		}
 	}
 
 	if description == "" {
-		return nil, &InputCannotBeNil{
+		return nil, &entities.InputCannotBeNil{
 			Input: "description",
 		}
 	}
 
 	if value <= 0 {
-		return nil, &InputCannotBeNil{
+		return nil, &entities.InputCannotBeNil{
 			Input: "value",
 		}
 	}
 
-	debit := &Debit{
+	debit := &entities.Debit{
 		ID: uuid.NewString(),
 		UserID: user.ID,
 		CategoryID: category.ID,

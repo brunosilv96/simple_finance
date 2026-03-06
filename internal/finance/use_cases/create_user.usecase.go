@@ -1,25 +1,20 @@
 package finance
 
 import (
+	entities "simple_finance/internal/finance/entities"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-type User struct {
-	ID string
-	Name string
-	CreatedAt time.Time
-}
-
-func NewUser(name string) (*User, error) {
+func CreateUserExecute(name string) (*entities.User, error){
 	if name == "" {
-		return nil, &InputCannotBeNil{
+		return nil, &entities.InputCannotBeNil{
 			Input: "name",
 		}
 	}
 
-	user := &User{
+	user := &entities.User{
 		ID: uuid.NewString(),
 		Name: name,
 		CreatedAt: time.Now(),
