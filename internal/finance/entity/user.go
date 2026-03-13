@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"simple_finance/internal/finance/usecase"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,7 +15,7 @@ type User struct {
 
 func NewUser(name string) (*User, error) {
 	if name == "" {
-		return nil, &InputCannotBeNil{
+		return nil, &usecase.InputCannotBeNil{
 			Input: "name",
 		}
 	}

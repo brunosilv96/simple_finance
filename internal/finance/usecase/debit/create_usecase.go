@@ -4,26 +4,28 @@ import (
 	"simple_finance/internal/finance/entity"
 	"time"
 
+	errors "simple_finance/internal/finance/usecase"
+
 	"github.com/google/uuid"
 )
 
-type CreateDebitUseCase struct {}
+type CreateDebit struct {}
 
-func (usecase *CreateDebitUseCase) Execute(category entity.Category, user entity.User, title, description string, date time.Time, value float64) (*entity.Debit, error){
+func (usecase *CreateDebit) Execute(category entity.Category, user entity.User, title, description string, date time.Time, value float64) (*entity.Debit, error){
 	if title == "" {
-		return nil, &entity.InputCannotBeNil{
+		return nil, &errors.InputCannotBeNil{
 			Input: "title",
 		}
 	}
 
 	if description == "" {
-		return nil, &entity.InputCannotBeNil{
+		return nil, &errors.InputCannotBeNil{
 			Input: "description",
 		}
 	}
 
 	if value <= 0 {
-		return nil, &entity.InputCannotBeNil{
+		return nil, &errors.InputCannotBeNil{
 			Input: "value",
 		}
 	}

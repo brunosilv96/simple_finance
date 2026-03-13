@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"simple_finance/internal/finance/usecase"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,19 +19,19 @@ type Debit struct {
 
 func NewDebit(category Category, user User, title, description string, date time.Time, value float64) (*Debit, error) {
 	if title == "" {
-		return nil, &InputCannotBeNil{
+		return nil, &usecase.InputCannotBeNil{
 			Input: "title",
 		}
 	}
 
 	if description == "" {
-		return nil, &InputCannotBeNil{
+		return nil, &usecase.InputCannotBeNil{
 			Input: "description",
 		}
 	}
 
 	if value <= 0 {
-		return nil, &InputCannotBeNil{
+		return nil, &usecase.InputCannotBeNil{
 			Input: "value",
 		}
 	}

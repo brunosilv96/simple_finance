@@ -4,14 +4,16 @@ import (
 	"simple_finance/internal/finance/entity"
 	"time"
 
+	errors "simple_finance/internal/finance/usecase"
+
 	"github.com/google/uuid"
 )
 
-type CreateUserUseCase struct {}
+type CreateUser struct {}
 
-func (usecase *CreateUserUseCase) Execute(name string) (*entity.User, error){
+func (usecase *CreateUser) Execute(name string) (*entity.User, error){
 	if name == "" {
-		return nil, &entity.InputCannotBeNil{
+		return nil, &errors.InputCannotBeNil{
 			Input: "name",
 		}
 	}
