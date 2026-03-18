@@ -1,6 +1,13 @@
 package usecase
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+var (
+	CategoryNotFound = errors.New("category not found")
+)
 
 type InputCannotBeNil struct {
 	Input string

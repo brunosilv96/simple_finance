@@ -24,9 +24,8 @@ func (usecase *FindCategoryById) Execute(id string) (entity.Category, error){
 
 	category, err := usecase.CategoryRepository.FindByID(id)
 	if err != nil {
-		return entity.Category{}, err
+		return entity.Category{}, errors.CategoryNotFound
 	}
 
 	return *category, nil
-	 
 }

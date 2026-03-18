@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"simple_finance/internal/finance/dto"
+	usecaseError "simple_finance/internal/finance/usecase"
 	usecase "simple_finance/internal/finance/usecase/category"
 )
 
@@ -32,7 +34,7 @@ func (handler *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := input.Bind(r.Body)
 	if err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		dto.ErrorReponse(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 	
@@ -41,43 +43,70 @@ func (handler *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		input.Description,
 	)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		dto.ErrorReponse(w, http.StatusBadRequest, err.Error())
 		return
+	}
+
+	categoryResponse := &dto.CategoryResponse{
+		ID: category.ID,
+		Name: category.Name,
+		Description: category.Description,
+		CreatedAt: category.CreatedAt,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(category)
+	categoryResponse.Render(w)
 }
 
 func (handler *CategoryHandler) FindAll(w http.ResponseWriter, r *http.Request) {
 	categories, err := handler.FindAllCategoriesUC.Execute()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		dto.ErrorReponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
+	var categoriesResponse []dto.CategoryResponse
+	for _, category := range categories {
+		categoriesResponse = append(categoriesResponse, dto.CategoryResponse{
+			ID: category.ID,
+			Name: category.Name,
+			Description: category.Description,
+			CreatedAt: category.CreatedAt,
+		})
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(categories)
+	json.NewEncoder(w).Encode(categoriesResponse)
 }
 
 func (handler *CategoryHandler) FindByID(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
-        http.Error(w, "ID is required", http.StatusBadRequest)
+		dto.ErrorReponse(w, http.StatusBadRequest, "ID is required")
         return
     }
 
 	category, err := handler.FindCategoryByIdUC.Execute(id)
 	if err != nil {
-        if err.Error() == "category not found" {
-            http.Error(w, err.Error(), http.StatusNotFound)
-            return
-        }
-        http.Error(w, "Erro interno", http.StatusInternalServerError)
-        return
+		switch {
+		case errors.Is(err, usecaseError.CategoryNotFound):
+			dto.ErrorReponse(w, http.StatusNotFound, err.Error())
+			return
+		default:
+			dto.ErrorReponse(w, http.StatusInternalServerError, "Server Internal Error")
+			return
+
+		}
+	}
+
+	categoryResponse := &dto.CategoryResponse{
+		ID: category.ID,
+		Name: category.Name,
+		Description: category.Description,
+		CreatedAt: category.CreatedAt,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(category)
+	categoryResponse.Render(w)
 }

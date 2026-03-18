@@ -28,7 +28,7 @@ func main() {
 	// GET: /health
 	mux.HandleFunc("GET /api/v1/health", handler.HealthCheck)
 
-	// Other Routes
+	// Setup Handlers
 	categoryHandler.SetupRoutes(mux)
 	
 	// Start web server
