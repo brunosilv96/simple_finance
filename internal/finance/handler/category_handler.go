@@ -13,13 +13,15 @@ type CategoryHandler struct {
 	CreateCategoryUC usecase.CreateCategory
 	FindAllCategoriesUC usecase.FindAllCategories
 	FindCategoryByIdUC usecase.FindCategoryById
+	DeleteCategoryUC usecase.DeleteCategory
 }
 
-func NewCategoryHandler(createCategoryUseCase usecase.CreateCategory, listCategoriesUseCase usecase.FindAllCategories, findCategoryByIdUC usecase.FindCategoryById) *CategoryHandler {
+func NewCategoryHandler(createCategoryUseCase usecase.CreateCategory, listCategoriesUseCase usecase.FindAllCategories, findCategoryByIdUC usecase.FindCategoryById, deleteCategoryUseCase usecase.DeleteCategory) *CategoryHandler {
 	return &CategoryHandler{
 		CreateCategoryUC: createCategoryUseCase,
 		FindAllCategoriesUC: listCategoriesUseCase,
 		FindCategoryByIdUC: findCategoryByIdUC,
+		DeleteCategoryUC: deleteCategoryUseCase,
 	}
 }
 
@@ -27,6 +29,7 @@ func (handler *CategoryHandler) SetupRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/categories", handler.Create)
     mux.HandleFunc("GET /api/v1/categories", handler.FindAll)
     mux.HandleFunc("GET /api/v1/categories/{id}", handler.FindByID)
+    mux.HandleFunc("DELETE /api/v1/categories/{id}", handler.Delete)
 }
 
 func (handler *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -109,4 +112,28 @@ func (handler *CategoryHandler) FindByID(w http.ResponseWriter, r *http.Request)
 
 	w.Header().Set("Content-Type", "application/json")
 	categoryResponse.Render(w)
+}
+
+func (handler *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		dto.ErrorReponse(w, http.StatusBadRequest, "ID is required")
+        return
+    }
+
+	err := handler.DeleteCategoryUC.Execute(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, usecaseError.CategoryNotFound):
+			dto.ErrorReponse(w, http.StatusNotFound, err.Error())
+			return
+		default:
+			dto.ErrorReponse(w, http.StatusInternalServerError, "Server Internal Error")
+			return
+
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w)
 }

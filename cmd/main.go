@@ -18,9 +18,10 @@ func main() {
 	createCategoryUseCase := usecase.NewCreateCategory(memoryCategoryRepository)
 	listCategoriesUseCase := usecase.NewListCategories(memoryCategoryRepository)
 	categoryByIdUseCase := usecase.NewFindCategoryById(memoryCategoryRepository)
+	deleteCategoryUseCase := usecase.NewDeleteCategory(memoryCategoryRepository)
 
 	// 3. Handlers
-	categoryHandler := handler.NewCategoryHandler(*createCategoryUseCase, *listCategoriesUseCase, *categoryByIdUseCase)
+	categoryHandler := handler.NewCategoryHandler(*createCategoryUseCase, *listCategoriesUseCase, *categoryByIdUseCase, *deleteCategoryUseCase)
 
 	// 4. Server
 	mux := http.NewServeMux()
