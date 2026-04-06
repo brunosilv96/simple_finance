@@ -10,12 +10,12 @@ import (
 )
 
 type CreateCategory struct {
-	CategoryRepository CategoryRepository
+	categoryRepository CategoryRepository
 }
 
 func NewCreateCategory(categoryRepository CategoryRepository) *CreateCategory {
 	return &CreateCategory{
-		CategoryRepository: categoryRepository,
+		categoryRepository: categoryRepository,
 	}
 }
 
@@ -33,7 +33,7 @@ func (usecase *CreateCategory) Execute(name, description string) (*entity.Catego
 		CreatedAt: time.Now(),
 	}
 
-	err := usecase.CategoryRepository.Save(category)
+	err := usecase.categoryRepository.Save(category)
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"simple_finance/internal/finance/handler"
 	"simple_finance/internal/finance/repository"
-	usecase "simple_finance/internal/finance/usecase/category"
 	"simple_finance/internal/middleware"
 )
 
@@ -13,15 +12,12 @@ func main() {
 	// Dependency Injection
 	// 1. Infra
 	memoryCategoryRepository := repository.NewMemoryCategory()
+	memoryUserRepository := repository.NewMemoryUser()
 	
-	// 2. Business
-	createCategoryUseCase := usecase.NewCreateCategory(memoryCategoryRepository)
-	listCategoriesUseCase := usecase.NewListCategories(memoryCategoryRepository)
-	categoryByIdUseCase := usecase.NewFindCategoryById(memoryCategoryRepository)
-	deleteCategoryUseCase := usecase.NewDeleteCategory(memoryCategoryRepository)
 
 	// 3. Handlers
-	categoryHandler := handler.NewCategoryHandler(*createCategoryUseCase, *listCategoriesUseCase, *categoryByIdUseCase, *deleteCategoryUseCase)
+	categoryHandler := handler.NewCategoryHandler(memoryCategoryRepository)
+	userHandler := handler.NewUserHandler(memoryUserRepository)
 
 	// 4. Server
 	mux := http.NewServeMux()
@@ -31,6 +27,7 @@ func main() {
 
 	// Setup Handlers
 	categoryHandler.SetupRoutes(mux)
+	userHandler.SetupRoutes(mux)
 	
 	// Start web server
 	log.Println("Server running on http://localhost:8080")

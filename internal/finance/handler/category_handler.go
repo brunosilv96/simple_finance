@@ -16,12 +16,17 @@ type CategoryHandler struct {
 	DeleteCategoryUC usecase.DeleteCategory
 }
 
-func NewCategoryHandler(createCategoryUseCase usecase.CreateCategory, listCategoriesUseCase usecase.FindAllCategories, findCategoryByIdUC usecase.FindCategoryById, deleteCategoryUseCase usecase.DeleteCategory) *CategoryHandler {
+func NewCategoryHandler(repository usecase.CategoryRepository) *CategoryHandler {
+	createCategoryUseCase := usecase.NewCreateCategory(repository)
+	listCategoriesUseCase := usecase.NewListCategories(repository)
+	categoryByIdUseCase := usecase.NewFindCategoryById(repository)
+	deleteCategoryUseCase := usecase.NewDeleteCategory(repository)
+	
 	return &CategoryHandler{
-		CreateCategoryUC: createCategoryUseCase,
-		FindAllCategoriesUC: listCategoriesUseCase,
-		FindCategoryByIdUC: findCategoryByIdUC,
-		DeleteCategoryUC: deleteCategoryUseCase,
+		CreateCategoryUC: *createCategoryUseCase,
+		FindAllCategoriesUC: *listCategoriesUseCase,
+		FindCategoryByIdUC: *categoryByIdUseCase,
+		DeleteCategoryUC: *deleteCategoryUseCase,
 	}
 }
 

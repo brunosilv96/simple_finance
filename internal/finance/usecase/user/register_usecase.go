@@ -9,9 +9,17 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateUser struct {}
+type RegisterUser struct {
+	userRepository UserRepository
+}
 
-func (usecase *CreateUser) Execute(name string) (*entity.User, error){
+func NewRegisterUser(repository UserRepository) *RegisterUser {
+	return &RegisterUser{
+		userRepository: repository,
+	}
+}
+
+func (usecase *RegisterUser) Execute(name string) (*entity.User, error){
 	if name == "" {
 		return nil, &errors.InputCannotBeNil{
 			Input: "name",
@@ -22,6 +30,11 @@ func (usecase *CreateUser) Execute(name string) (*entity.User, error){
 		ID: uuid.NewString(),
 		Name: name,
 		CreatedAt: time.Now(),
+	}
+
+	err := usecase.userRepository.Save(user)
+	if err != nil {
+		return nil, err
 	}
 
 	return user, nil
