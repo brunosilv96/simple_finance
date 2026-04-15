@@ -7,6 +7,7 @@ import (
 
 var (
 	CategoryNotFound = errors.New("category not found")
+	UserNotFound     = errors.New("user not found")
 )
 
 type InputCannotBeNil struct {

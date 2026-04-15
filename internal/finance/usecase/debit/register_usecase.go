@@ -10,9 +10,21 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateDebit struct{}
+type RegisterDebit struct{}
 
-func (usecase *CreateDebit) Execute(category entity.Category, user entity.User, title, description string, date time.Time, value float64) (*entity.Debit, error) {
+func (usecase *RegisterDebit) Execute(categoryID, userID, title, description string, date time.Time, value float64) (*entity.Debit, error) {
+	if categoryID == "" {
+		return nil, &errors.InputCannotBeNil{
+			Input: "category id",
+		}
+	}
+
+	if userID == "" {
+		return nil, &errors.InputCannotBeNil{
+			Input: "user id",
+		}
+	}
+
 	if title == "" {
 		return nil, &errors.InputCannotBeNil{
 			Input: "title",
@@ -33,8 +45,8 @@ func (usecase *CreateDebit) Execute(category entity.Category, user entity.User, 
 
 	debit := &entity.Debit{
 		ID:          uuid.NewString(),
-		UserID:      user.ID,
-		CategoryID:  category.ID,
+		UserID:      userID,
+		CategoryID:  categoryID,
 		Title:       title,
 		Desctiption: description,
 		Value:       value,
