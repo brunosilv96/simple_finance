@@ -1,15 +1,16 @@
 package entity
 
 import (
-	"simple_finance/internal/finance/usecase"
 	"time"
+
+	"github.com/brunosilv96/simple_finance_api/internal/finance/usecase"
 
 	"github.com/google/uuid"
 )
 
 type User struct {
-	ID string
-	Name string
+	ID        string
+	Name      string
 	CreatedAt time.Time
 }
 
@@ -21,8 +22,8 @@ func NewUser(name string) (*User, error) {
 	}
 
 	user := &User{
-		ID: uuid.NewString(),
-		Name: name,
+		ID:        uuid.NewString(),
+		Name:      name,
 		CreatedAt: time.Now(),
 	}
 

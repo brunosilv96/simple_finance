@@ -2,8 +2,9 @@ package handler
 
 import (
 	"net/http"
-	"simple_finance/internal/finance/dto"
-	usecase "simple_finance/internal/finance/usecase/user"
+
+	"github.com/brunosilv96/simple_finance_api/internal/finance/dto"
+	usecase "github.com/brunosilv96/simple_finance_api/internal/finance/usecase/user"
 )
 
 type UserHandler struct {
@@ -36,13 +37,13 @@ func (handler *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		dto.ErrorReponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	
+
 	userResponse := &dto.RegisterUserResponse{
-		ID: user.ID,
-		Name: user.Name,
+		ID:        user.ID,
+		Name:      user.Name,
 		CreatedAt: user.CreatedAt,
 	}
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	userResponse.Render(w)

@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"simple_finance/internal/finance/entity"
-	errors "simple_finance/internal/finance/usecase"
+	"github.com/brunosilv96/simple_finance_api/internal/finance/entity"
+	errors "github.com/brunosilv96/simple_finance_api/internal/finance/usecase"
 )
 
 type FindCategoryById struct {
@@ -15,7 +15,7 @@ func NewFindCategoryById(categoryRepository CategoryRepository) *FindCategoryByI
 	}
 }
 
-func (usecase *FindCategoryById) Execute(id string) (entity.Category, error){
+func (usecase *FindCategoryById) Execute(id string) (entity.Category, error) {
 	if id == "" {
 		return entity.Category{}, &errors.InputCannotBeNil{
 			Input: "id",

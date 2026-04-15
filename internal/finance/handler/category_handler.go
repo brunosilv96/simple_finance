@@ -4,16 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"simple_finance/internal/finance/dto"
-	usecaseError "simple_finance/internal/finance/usecase"
-	usecase "simple_finance/internal/finance/usecase/category"
+
+	"github.com/brunosilv96/simple_finance_api/internal/finance/dto"
+	usecaseError "github.com/brunosilv96/simple_finance_api/internal/finance/usecase"
+	usecase "github.com/brunosilv96/simple_finance_api/internal/finance/usecase/category"
 )
 
 type CategoryHandler struct {
-	CreateCategoryUC usecase.CreateCategory
+	CreateCategoryUC    usecase.CreateCategory
 	FindAllCategoriesUC usecase.FindAllCategories
-	FindCategoryByIdUC usecase.FindCategoryById
-	DeleteCategoryUC usecase.DeleteCategory
+	FindCategoryByIdUC  usecase.FindCategoryById
+	DeleteCategoryUC    usecase.DeleteCategory
 }
 
 func NewCategoryHandler(repository usecase.CategoryRepository) *CategoryHandler {
@@ -21,20 +22,20 @@ func NewCategoryHandler(repository usecase.CategoryRepository) *CategoryHandler 
 	listCategoriesUseCase := usecase.NewListCategories(repository)
 	categoryByIdUseCase := usecase.NewFindCategoryById(repository)
 	deleteCategoryUseCase := usecase.NewDeleteCategory(repository)
-	
+
 	return &CategoryHandler{
-		CreateCategoryUC: *createCategoryUseCase,
+		CreateCategoryUC:    *createCategoryUseCase,
 		FindAllCategoriesUC: *listCategoriesUseCase,
-		FindCategoryByIdUC: *categoryByIdUseCase,
-		DeleteCategoryUC: *deleteCategoryUseCase,
+		FindCategoryByIdUC:  *categoryByIdUseCase,
+		DeleteCategoryUC:    *deleteCategoryUseCase,
 	}
 }
 
 func (handler *CategoryHandler) SetupRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/categories", handler.Create)
-    mux.HandleFunc("GET /api/v1/categories", handler.FindAll)
-    mux.HandleFunc("GET /api/v1/categories/{id}", handler.FindByID)
-    mux.HandleFunc("DELETE /api/v1/categories/{id}", handler.Delete)
+	mux.HandleFunc("GET /api/v1/categories", handler.FindAll)
+	mux.HandleFunc("GET /api/v1/categories/{id}", handler.FindByID)
+	mux.HandleFunc("DELETE /api/v1/categories/{id}", handler.Delete)
 }
 
 func (handler *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +46,7 @@ func (handler *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		dto.ErrorReponse(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	
+
 	category, err := handler.CreateCategoryUC.Execute(
 		input.Name,
 		input.Description,
@@ -56,10 +57,10 @@ func (handler *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	categoryResponse := &dto.CategoryResponse{
-		ID: category.ID,
-		Name: category.Name,
+		ID:          category.ID,
+		Name:        category.Name,
 		Description: category.Description,
-		CreatedAt: category.CreatedAt,
+		CreatedAt:   category.CreatedAt,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -77,10 +78,10 @@ func (handler *CategoryHandler) FindAll(w http.ResponseWriter, r *http.Request) 
 	var categoriesResponse []dto.CategoryResponse
 	for _, category := range categories {
 		categoriesResponse = append(categoriesResponse, dto.CategoryResponse{
-			ID: category.ID,
-			Name: category.Name,
+			ID:          category.ID,
+			Name:        category.Name,
 			Description: category.Description,
-			CreatedAt: category.CreatedAt,
+			CreatedAt:   category.CreatedAt,
 		})
 	}
 
@@ -92,8 +93,8 @@ func (handler *CategoryHandler) FindByID(w http.ResponseWriter, r *http.Request)
 	id := r.PathValue("id")
 	if id == "" {
 		dto.ErrorReponse(w, http.StatusBadRequest, "ID is required")
-        return
-    }
+		return
+	}
 
 	category, err := handler.FindCategoryByIdUC.Execute(id)
 	if err != nil {
@@ -109,10 +110,10 @@ func (handler *CategoryHandler) FindByID(w http.ResponseWriter, r *http.Request)
 	}
 
 	categoryResponse := &dto.CategoryResponse{
-		ID: category.ID,
-		Name: category.Name,
+		ID:          category.ID,
+		Name:        category.Name,
 		Description: category.Description,
-		CreatedAt: category.CreatedAt,
+		CreatedAt:   category.CreatedAt,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -123,8 +124,8 @@ func (handler *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
 		dto.ErrorReponse(w, http.StatusBadRequest, "ID is required")
-        return
-    }
+		return
+	}
 
 	err := handler.DeleteCategoryUC.Execute(id)
 	if err != nil {

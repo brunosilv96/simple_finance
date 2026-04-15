@@ -1,10 +1,11 @@
 package usecase
 
 import (
-	"simple_finance/internal/finance/entity"
 	"time"
 
-	errors "simple_finance/internal/finance/usecase"
+	"github.com/brunosilv96/simple_finance_api/internal/finance/entity"
+
+	errors "github.com/brunosilv96/simple_finance_api/internal/finance/usecase"
 
 	"github.com/google/uuid"
 )
@@ -19,7 +20,7 @@ func NewCreateCategory(categoryRepository CategoryRepository) *CreateCategory {
 	}
 }
 
-func (usecase *CreateCategory) Execute(name, description string) (*entity.Category, error){
+func (usecase *CreateCategory) Execute(name, description string) (*entity.Category, error) {
 	if name == "" {
 		return nil, &errors.InputCannotBeNil{
 			Input: "name",
@@ -27,10 +28,10 @@ func (usecase *CreateCategory) Execute(name, description string) (*entity.Catego
 	}
 
 	category := &entity.Category{
-		ID: uuid.NewString(),
-		Name: name,
+		ID:          uuid.NewString(),
+		Name:        name,
 		Description: description,
-		CreatedAt: time.Now(),
+		CreatedAt:   time.Now(),
 	}
 
 	err := usecase.categoryRepository.Save(category)

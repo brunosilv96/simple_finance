@@ -1,10 +1,11 @@
 package usecase
 
 import (
-	"simple_finance/internal/finance/entity"
 	"time"
 
-	errors "simple_finance/internal/finance/usecase"
+	"github.com/brunosilv96/simple_finance_api/internal/finance/entity"
+
+	errors "github.com/brunosilv96/simple_finance_api/internal/finance/usecase"
 
 	"github.com/google/uuid"
 )
@@ -19,7 +20,7 @@ func NewRegisterUser(repository UserRepository) *RegisterUser {
 	}
 }
 
-func (usecase *RegisterUser) Execute(name string) (*entity.User, error){
+func (usecase *RegisterUser) Execute(name string) (*entity.User, error) {
 	if name == "" {
 		return nil, &errors.InputCannotBeNil{
 			Input: "name",
@@ -27,8 +28,8 @@ func (usecase *RegisterUser) Execute(name string) (*entity.User, error){
 	}
 
 	user := &entity.User{
-		ID: uuid.NewString(),
-		Name: name,
+		ID:        uuid.NewString(),
+		Name:      name,
 		CreatedAt: time.Now(),
 	}
 

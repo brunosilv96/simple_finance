@@ -1,20 +1,21 @@
 package entity
 
 import (
-	"simple_finance/internal/finance/usecase"
 	"time"
+
+	"github.com/brunosilv96/simple_finance_api/internal/finance/usecase"
 
 	"github.com/google/uuid"
 )
 
 type Debit struct {
-	ID string
-	CategoryID string
-	UserID string
-	Title string
+	ID          string
+	CategoryID  string
+	UserID      string
+	Title       string
 	Desctiption string
-	Value float64
-	Date time.Time
+	Value       float64
+	Date        time.Time
 }
 
 func NewDebit(category Category, user User, title, description string, date time.Time, value float64) (*Debit, error) {
@@ -37,13 +38,13 @@ func NewDebit(category Category, user User, title, description string, date time
 	}
 
 	debit := &Debit{
-		ID: uuid.NewString(),
-		UserID: user.ID,
-		CategoryID: category.ID,
-		Title: title,
+		ID:          uuid.NewString(),
+		UserID:      user.ID,
+		CategoryID:  category.ID,
+		Title:       title,
 		Desctiption: description,
-		Value: value,
-		Date: date,
+		Value:       value,
+		Date:        date,
 	}
 
 	return debit, nil

@@ -1,6 +1,6 @@
 package usecase
 
-import "simple_finance/internal/finance/entity"
+import "github.com/brunosilv96/simple_finance_api/internal/finance/entity"
 
 type CategoryRepository interface {
 	Save(category *entity.Category) error

@@ -2,7 +2,8 @@ package repository
 
 import (
 	"errors"
-	"simple_finance/internal/finance/entity"
+
+	"github.com/brunosilv96/simple_finance_api/internal/finance/entity"
 )
 
 type MemoryCategory struct {
@@ -17,7 +18,7 @@ func NewMemoryCategory() *MemoryCategory {
 }
 
 func (repository *MemoryCategory) Save(category *entity.Category) error {
-	repository.categories[category.ID] = *category 
+	repository.categories[category.ID] = *category
 
 	return nil
 }
@@ -49,6 +50,6 @@ func (repository *MemoryCategory) Delete(id string) error {
 	}
 
 	delete(repository.categories, category.ID)
-	
+
 	return nil
 }
