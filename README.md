@@ -1,135 +1,168 @@
 # Simple Finance API
 
-API REST simples de finanças pessoais desenvolvida em Go puro, sem frameworks externos. Permite gerenciar usuários, categorias e débitos financeiros.
+API REST de finanças pessoais em Go.
 
-## Tecnologias
+## Stack atual
 
-- **Go** 1.25+
-- **net/http** (stdlib) — servidor HTTP
-- **github.com/google/uuid** — geração de IDs únicos
+- Go 1.25+
+- Gin (HTTP framework)
+- UUID (github.com/google/uuid)
+- Repositórios in-memory
 
-## Arquitetura
+## Estado atual do projeto
 
-O projeto segue os princípios de **Clean Architecture**, separando responsabilidades em camadas:
+O projeto está em transição para uma arquitetura mais limpa, com separação entre:
 
-```
+- app/bootstrap (composição de dependências)
+- http (router, handlers, dto)
+- finance (domínio e casos de uso)
+- infra (implementações de repositório)
+
+Estrutura principal:
+
+```text
 cmd/
-└── main.go                  # Ponto de entrada e injeção de dependências
+  api/
+    main.go
 
 internal/
-└── finance/
-    ├── dto/                 # Data Transfer Objects (request/response)
-    ├── entity/              # Entidades de domínio
-    ├── handler/             # Handlers HTTP (controllers)
-    ├── repository/          # Implementações de repositório (in-memory)
-    └── usecase/             # Casos de uso (regras de negócio)
-        ├── category/
-        ├── debit/
-        └── user/
-middleware/
-└── logger.go                # Middleware de logging de requisições
+  app/
+    bootstrap.go
+  http/
+    dto/
+    handlers/
+    middleware/
+    router/
+  finance/
+    category/
+      entity/
+      usecase/
+      category_repository.go
+      errors.go
+    user/
+      entity/
+      usecase/
+      user_repository.go
+      errors.go
+    debit/
+      entity/
+      usecase/
+      errors.go
+  infra/
+    repository/
+      memory_category_repository.go
+      memory_user_repository.go
+  shared/
+    app_error.go
 ```
 
-## Endpoints
+## Rotas disponíveis
 
-### Health Check
-| Método | Rota              | Descrição            |
-|--------|-------------------|----------------------|
-| GET    | `/api/v1/health`  | Verifica status da API |
+### Health
 
-### Usuários
-| Método | Rota             | Descrição             |
-|--------|------------------|-----------------------|
-| POST   | `/api/v1/users`  | Registrar novo usuário |
+| Método | Rota      | Descrição                    |
+|--------|-----------|------------------------------|
+| GET    | /health   | Verifica disponibilidade API |
 
-### Categorias
-| Método | Rota                      | Descrição                  |
-|--------|---------------------------|----------------------------|
-| POST   | `/api/v1/categories`      | Criar nova categoria        |
-| GET    | `/api/v1/categories`      | Listar todas as categorias  |
-| GET    | `/api/v1/categories/{id}` | Buscar categoria por ID     |
-| DELETE | `/api/v1/categories/{id}` | Deletar categoria           |
+### User
 
-## Exemplos de Uso
+| Método | Rota              | Descrição                 |
+|--------|-------------------|---------------------------|
+| POST   | /api/v1/users     | Cria um novo usuário      |
+| GET    | /api/v1/users/:id | Busca usuário por ID      |
 
-### Health Check
+### Category
+
+| Método | Rota                   | Descrição                    |
+|--------|------------------------|------------------------------|
+| POST   | /api/v1/categories     | Cria uma nova categoria      |
+| GET    | /api/v1/categories     | Lista todas as categorias    |
+| GET    | /api/v1/categories/:id | Busca categoria por ID       |
+| DELETE | /api/v1/categories/:id | Remove categoria por ID      |
+
+Observação: o domínio debit já possui entidade e caso de uso, mas ainda não está exposto por rotas HTTP.
+
+## Exemplos de uso
+
+### Health
+
 ```bash
-curl http://localhost:8080/api/v1/health
-```
-```json
-{"status": "ok"}
+curl http://localhost:8080/health
 ```
 
-### Registrar Usuário
+### Criar usuário
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/users \
   -H "Content-Type: application/json" \
-  -d '{"name": "Bruno Silva"}'
-```
-```json
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "name": "Bruno Silva",
-  "created_at": "2026-04-15T10:00:00Z"
-}
+  -d '{"name":"Bruno Silva"}'
 ```
 
-### Criar Categoria
+### Buscar usuário por ID
+
+```bash
+curl http://localhost:8080/api/v1/users/<id>
+```
+
+### Criar categoria
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/categories \
   -H "Content-Type: application/json" \
-  -d '{"name": "Alimentação", "description": "Gastos com comida e restaurantes"}'
-```
-```json
-{
-  "id": "550e8400-e29b-41d4-a716-446655440001",
-  "name": "Alimentação",
-  "description": "Gastos com comida e restaurantes",
-  "created_at": "2026-04-15T10:00:00Z"
-}
+  -d '{"name":"Alimentacao","description":"Mercado e restaurantes"}'
 ```
 
-### Listar Categorias
+### Listar categorias
+
 ```bash
 curl http://localhost:8080/api/v1/categories
 ```
 
-### Buscar Categoria por ID
+### Buscar categoria por ID
+
 ```bash
-curl http://localhost:8080/api/v1/categories/550e8400-e29b-41d4-a716-446655440001
+curl http://localhost:8080/api/v1/categories/<id>
 ```
 
-### Deletar Categoria
+### Remover categoria
+
 ```bash
-curl -X DELETE http://localhost:8080/api/v1/categories/550e8400-e29b-41d4-a716-446655440001
+curl -X DELETE http://localhost:8080/api/v1/categories/<id>
 ```
 
-## Como Executar
+## Como executar
 
-### Pré-requisitos
-- Go 1.25 ou superior instalado
+Pré-requisito:
 
-### Passos
+- Go 1.25+
 
-1. Clone o repositório:
-```bash
-git clone https://github.com/brunosilv96/simple_finance_api.git
-cd simple_finance_api
-```
+Passos:
 
-2. Instale as dependências:
+1. Instalar dependências:
+
 ```bash
 go mod tidy
 ```
 
-3. Execute a aplicação:
+2. Subir aplicação:
+
 ```bash
-go run ./cmd/main.go
+go run ./cmd/api/main.go
 ```
 
-O servidor estará disponível em `http://localhost:8080`.
+Servidor padrão: http://localhost:8080
 
-## Observações
+## Qualidade e limitações atuais
 
-- O armazenamento é **in-memory**: os dados são perdidos ao reiniciar a aplicação.
-- Não há autenticação implementada nesta versão.
+- Persistência in-memory (dados se perdem ao reiniciar)
+- Ainda sem autenticação/autorização
+- Ainda sem suíte de testes automatizados
+- Ainda sem graceful shutdown explícito no main
+
+## Próximos passos sugeridos
+
+1. Adicionar testes de use case e handlers.
+2. Adicionar graceful shutdown no servidor HTTP.
+3. Expor endpoints do domínio debit.
+4. Evoluir repositório para persistência real (PostgreSQL, por exemplo).
+5. Padronizar respostas de erro em um formato único na camada HTTP.
