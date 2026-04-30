@@ -3,6 +3,8 @@
         "brunosilv",
         "github",
         "gonic",
+        "gorm",
+        "postgres",
         "usecase",
         "uuid"
     ]
