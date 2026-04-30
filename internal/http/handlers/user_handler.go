@@ -27,6 +27,7 @@ func NewUserHandler(repository domain.UserRepository) *UserHandler {
 
 func (handler *UserHandler) Create(c *gin.Context) {
 	var input dto.RegisterUserRequest
+	ctx := c.Request.Context()
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -35,7 +36,7 @@ func (handler *UserHandler) Create(c *gin.Context) {
 		return
 	}
 
-	user, err := handler.RegisterUserUC.Execute(input.Name)
+	user, err := handler.RegisterUserUC.Execute(ctx, input.Name)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -53,6 +54,7 @@ func (handler *UserHandler) Create(c *gin.Context) {
 }
 
 func (handler *UserHandler) FindByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	id := c.Param("id")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -61,7 +63,7 @@ func (handler *UserHandler) FindByID(c *gin.Context) {
 		return
 	}
 
-	user, err := handler.FindUserByIdUC.Execute(id)
+	user, err := handler.FindUserByIdUC.Execute(ctx, id)
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.UserNotFound):

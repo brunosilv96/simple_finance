@@ -32,6 +32,7 @@ func NewCategoryHandler(repository domain.CategoryRepository) *CategoryHandler {
 }
 
 func (handler *CategoryHandler) Create(c *gin.Context) {
+	ctx := c.Request.Context()
 	var input dto.CreateCategoryRequest
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -41,7 +42,7 @@ func (handler *CategoryHandler) Create(c *gin.Context) {
 		return
 	}
 
-	category, err := handler.CreateCategoryUC.Execute(
+	category, err := handler.CreateCategoryUC.Execute(ctx,
 		input.Name,
 		input.Description,
 	)
@@ -63,7 +64,8 @@ func (handler *CategoryHandler) Create(c *gin.Context) {
 }
 
 func (handler *CategoryHandler) FindAll(c *gin.Context) {
-	categories, err := handler.FindAllCategoriesUC.Execute()
+	ctx := c.Request.Context()
+	categories, err := handler.FindAllCategoriesUC.Execute(ctx)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -85,6 +87,7 @@ func (handler *CategoryHandler) FindAll(c *gin.Context) {
 }
 
 func (handler *CategoryHandler) FindByID(c *gin.Context) {
+	ctx := c.Request.Context()
 	id := c.Param("id")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -93,7 +96,7 @@ func (handler *CategoryHandler) FindByID(c *gin.Context) {
 		return
 	}
 
-	category, err := handler.FindCategoryByIdUC.Execute(id)
+	category, err := handler.FindCategoryByIdUC.Execute(ctx, id)
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.CategoryNotFound):
@@ -121,6 +124,7 @@ func (handler *CategoryHandler) FindByID(c *gin.Context) {
 }
 
 func (handler *CategoryHandler) Delete(c *gin.Context) {
+	ctx := c.Request.Context()
 	id := c.Param("id")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -129,7 +133,7 @@ func (handler *CategoryHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	err := handler.DeleteCategoryUC.Execute(id)
+	err := handler.DeleteCategoryUC.Execute(ctx, id)
 	if err != nil {
 		switch {
 		case errors.Is(err, domain.CategoryNotFound):

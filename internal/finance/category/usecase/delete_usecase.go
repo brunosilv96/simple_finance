@@ -1,6 +1,9 @@
 package usecase
 
 import (
+	"context"
+	"errors"
+
 	"github.com/brunosilv96/simple_finance_api/internal/finance/category"
 	"github.com/brunosilv96/simple_finance_api/internal/shared"
 )
@@ -15,14 +18,20 @@ func NewDeleteCategory(categoryRepository category.CategoryRepository) *DeleteCa
 	}
 }
 
-func (usecase *DeleteCategory) Execute(id string) error {
+func (usecase *DeleteCategory) Execute(ctx context.Context, id string) error {
+	select {
+	case <-ctx.Done():
+		return errors.New("http connection was cancel")
+	default:
+	}
+
 	if id == "" {
 		return &shared.InputCannotBeNil{
 			Input: "id",
 		}
 	}
 
-	err := usecase.CategoryRepository.Delete(id)
+	err := usecase.CategoryRepository.Delete(ctx, id)
 	if err != nil {
 		return category.CategoryNotFound
 	}

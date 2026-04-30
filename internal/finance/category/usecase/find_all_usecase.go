@@ -1,6 +1,9 @@
 package usecase
 
 import (
+	"context"
+	"errors"
+
 	"github.com/brunosilv96/simple_finance_api/internal/finance/category"
 	entity "github.com/brunosilv96/simple_finance_api/internal/finance/category/entity"
 )
@@ -15,8 +18,14 @@ func NewListCategories(categoryRepository category.CategoryRepository) *FindAllC
 	}
 }
 
-func (usecase *FindAllCategories) Execute() ([]entity.Category, error) {
-	categories, err := usecase.CategoryRepository.FindAll()
+func (usecase *FindAllCategories) Execute(ctx context.Context) ([]entity.Category, error) {
+	select {
+	case <-ctx.Done():
+		return nil, errors.New("http connection was cancel")
+	default:
+	}
+
+	categories, err := usecase.CategoryRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}

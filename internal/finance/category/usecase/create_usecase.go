@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+	"errors"
 	"time"
 
 	"github.com/brunosilv96/simple_finance_api/internal/finance/category"
@@ -19,7 +21,13 @@ func NewCreateCategory(categoryRepository category.CategoryRepository) *CreateCa
 	}
 }
 
-func (usecase *CreateCategory) Execute(name, description string) (*entity.Category, error) {
+func (usecase *CreateCategory) Execute(ctx context.Context, name, description string) (*entity.Category, error) {
+	select {
+	case <-ctx.Done():
+		return nil, errors.New("http connection was cancel")
+	default:
+	}
+
 	if name == "" {
 		return nil, &shared.InputCannotBeNil{
 			Input: "name",
@@ -33,7 +41,7 @@ func (usecase *CreateCategory) Execute(name, description string) (*entity.Catego
 		CreatedAt:   time.Now(),
 	}
 
-	err := usecase.categoryRepository.Save(category)
+	err := usecase.categoryRepository.Save(ctx, category)
 	if err != nil {
 		return nil, err
 	}
