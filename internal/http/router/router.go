@@ -1,6 +1,10 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"os"
+
+	"github.com/gin-gonic/gin"
+)
 
 type UserHandler interface {
 	Create(c *gin.Context)
@@ -21,6 +25,16 @@ type Router struct {
 }
 
 func NewRouter(router Router) *gin.Engine {
+	gin.SetMode(gin.DebugMode)
+
+	if os.Getenv("GIN_MODE") == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	if os.Getenv("GIN_MODE") == "test" {
+		gin.SetMode(gin.TestMode)
+	}
+
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 

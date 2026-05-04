@@ -1,14 +1,22 @@
 package app
 
 import (
+	"log"
+
 	http "github.com/brunosilv96/simple_finance_api/internal/http/handlers"
 	"github.com/brunosilv96/simple_finance_api/internal/http/router"
+	"github.com/brunosilv96/simple_finance_api/internal/infra"
 	"github.com/brunosilv96/simple_finance_api/internal/infra/repository"
 	"github.com/gin-gonic/gin"
 )
 
-func App() *gin.Engine {
+func Run() *gin.Engine {
 	// Infra
+	_, err := infra.InitializePostgresDB()
+	if err != nil {
+		log.Fatal("error to open db connection")
+	}
+
 	categoryRepo := repository.NewMemoryCategory()
 	userRepo := repository.NewMemoryUser()
 

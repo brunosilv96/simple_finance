@@ -1,12 +1,14 @@
 package infra
 
 import (
+	"os"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func InitializePostgresDB() (*gorm.DB, error) {
-	dsn := "postgresql://postgres:123456@localhost:5432/simple_finance"
+	dsn := os.Getenv("DATABASE_URL")
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
